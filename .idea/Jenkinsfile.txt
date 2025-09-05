@@ -1,0 +1,29 @@
+pipeline {
+  agent any
+
+  parameters {
+    string(name: 'TAGS', defaultValue: '@smoke', description: 'Cucumber tag expression')
+  }
+
+  stages {
+    stage('Checkout') {
+      steps { checkout scm }
+    }
+
+    stage('Test') {
+      steps {
+        echo "Running with tags: ${params.TAGS}"
+        // Windows agent uses bat; on Linux use sh with same command
+        bat 'mvn clean test -Dsurefire.suiteXmlFiles=testng.xml -Dcucumber.filter.tags="%TAGS%"'
+      }
+    }
+  }
+
+  post {
+    always {
+      // Cucumber JUnit XML from your plugin option above
+      junit allowEmptyResults: true, testResults: 'target/cucumber-reports/Cucumber.xml'
+      archiveArtifacts artifacts: 'target/**/*.html,target/*.json', allowEmptyArchive: true
+    }
+  }
+}
