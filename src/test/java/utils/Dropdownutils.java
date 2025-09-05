@@ -1,9 +1,6 @@
 package utils;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Select;
@@ -148,7 +145,49 @@ public class Dropdownutils {
 	    }
 	}
 
-	public static void selectFromAutoSuggest(WebDriver driver, WebElement inputField, By optionsLocator,
+    public static void safeSelectFromAutoSuggest(WebDriver driver, WebElement inputField, By optionsLocator,
+                                                 String inputText, String expectedOptionText) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        boolean found = false;
+
+        try {
+            inputField.clear();
+            inputField.sendKeys(inputText);
+
+            for (int attempt = 0; attempt < 3 && !found; attempt++) {
+                try {
+                    List<WebElement> suggestions = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(optionsLocator));
+                    for (WebElement suggestion : suggestions) {
+                        String text = suggestion.getText().trim();
+                        if (text.equalsIgnoreCase(expectedOptionText.trim())) {
+                            try {
+                                suggestion.click();
+                            } catch (Exception e) {
+                                js.executeScript("arguments[0].click();", suggestion);
+                            }
+                            found = true;
+                            System.out.println("Selected autosuggest option: " + text);
+                            break;
+                        }
+                    }
+                } catch (StaleElementReferenceException sere) {
+                    System.out.println("Stale element in autosuggest, retrying... attempt " + attempt);
+                } catch (Exception e) {
+                    System.out.println("Retry " + attempt + " for autosuggest: " + expectedOptionText);
+                }
+            }
+
+            if (!found) {
+                System.out.println("Expected option not found in autosuggest: " + expectedOptionText);
+            }
+        } catch (Exception e) {
+            System.out.println("Auto-suggestion selection failed: " + e.getMessage());
+        }
+    }
+
+
+    public static void selectFromAutoSuggest(WebDriver driver, WebElement inputField, By optionsLocator,
 			String inputText, String expectedOptionText) {
 		try {
 			WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));

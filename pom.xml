@@ -89,6 +89,8 @@
             <artifactId>extentreports-cucumber7-adapter</artifactId>
             <version>1.10.1</version>
         </dependency>
+
+
     </dependencies>
 
     <build>
@@ -119,6 +121,7 @@
                     <suiteXmlFiles>
                         <suiteXmlFile>testng.xml</suiteXmlFile>
                     </suiteXmlFiles>
+                    
                 </configuration>
             </plugin>
         </plugins>

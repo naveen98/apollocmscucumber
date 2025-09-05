@@ -18,7 +18,7 @@ import org.testng.annotations.DataProvider;
         },
         monochrome = true,
         dryRun = false,
-        tags = "@smoke"
+        tags = "@regression"
 )
 public class TestNGRunner extends AbstractTestNGCucumberTests {
 
