@@ -5,9 +5,7 @@ import io.cucumber.testng.CucumberOptions;
 import org.testng.annotations.DataProvider;
 
 @CucumberOptions(
-        features = {
-                "src/test/java/features"
-        },
+        features = "src/test/java/features",
         glue = {"stepDefinitions", "hooks"},
         plugin = {
                 "pretty",
@@ -17,12 +15,10 @@ import org.testng.annotations.DataProvider;
                 "com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:"
         },
         monochrome = true,
-        dryRun = false,
-        tags = "@regression"
+        dryRun = false
+
 )
 public class TestNGRunner extends AbstractTestNGCucumberTests {
-
-
     @Override
     @DataProvider(parallel = false)
     public Object[][] scenarios() {
